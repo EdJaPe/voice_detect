@@ -5,6 +5,7 @@ env/
 *.env/
 *.venv/
 voice-venv/
+voice-env/
 
 # Byte-compiled files
 __pycache__/
