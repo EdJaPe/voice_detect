@@ -1,3 +1,12 @@
+# Audio data
+data/**/*.wav
+data/voice/
+data/silence/
+
+# Model files
+model/**/*.h5
+model/**/*.pkl
+model/**/*.tflite
 
 # Python virtual environments
 venv/
