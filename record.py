@@ -24,7 +24,7 @@ for r in range(quantity):
 	audio = sd.rec(int(fs * duration), samplerate=fs, channels=1, dtype='int16')
 	sd.wait()
 
-	filename = os.path.join(output_dir3, f"background_{r+1:02d}.wav")
+	filename = os.path.join(output_dir3, f"rainforest_{r+1:02d}.wav")
 	wav.write(filename, fs, audio)
 	print(f"Saved: {filename}")
 print("Done recording 20 files.")

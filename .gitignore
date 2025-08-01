@@ -2,6 +2,7 @@
 data/**/*.wav
 data/voice/
 data/silence/
+data/background/
 
 # Model files
 model/**/*.h5
