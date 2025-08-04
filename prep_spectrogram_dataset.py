@@ -1,64 +1,61 @@
+import os
 import librosa
 import numpy as np
-import pandas as pd
-import os
+from glob import glob
 
 # Constants
 SAMPLE_RATE = 16000
-DURATION = 2  # seconds
-SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
-N_MELS = 128  # Number of Mel bands
-HOP_LENGTH = 512  # Step size for FFT
-FIXED_SIZE = (N_MELS, 87)  # Height x Width of spectrogram
+DURATION = 3  # seconds
+N_MELS = 128
+HOP_LENGTH = 512
+SAMPLES_PER_FILE = SAMPLE_RATE * DURATION
 
-# Load the CSV
-df = pd.read_csv('dataset.csv')
-X = []
-y = []
+# Directories
+input_base = "data"
+output_base = "spectrograms"
+labels = ["voice", "silence", "background"]
 
 def extract_mel_spectrogram(file_path):
+    # Load the audio file
     y, sr = librosa.load(file_path, sr=SAMPLE_RATE)
-    
-    # Pad or trim to exact length
-    if len(y) < SAMPLES_PER_TRACK:
-        y = np.pad(y, (0, SAMPLES_PER_TRACK - len(y)))
-    else:
-        y = y[:SAMPLES_PER_TRACK]
 
-    # Generate Mel spectrogram
-    mel = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=N_MELS, hop_length=HOP_LENGTH)
-    
-    # Convert to dB scale
-    mel_db = librosa.power_to_db(mel, ref=np.max)
-    
-    # Resize to fixed shape
-    if mel_db.shape[1] < FIXED_SIZE[1]:
-        pad_width = FIXED_SIZE[1] - mel_db.shape[1]
-        mel_db = np.pad(mel_db, ((0, 0), (0, pad_width)), mode='constant')
+    # Pad or trim to fixed length
+    if len(y) < SAMPLES_PER_FILE:
+        y = np.pad(y, (0, SAMPLES_PER_FILE - len(y)))
     else:
-        mel_db = mel_db[:, :FIXED_SIZE[1]]
+        y = y[:SAMPLES_PER_FILE]
+
+    # Compute mel spectrogram
+    mel = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=N_MELS, hop_length=HOP_LENGTH)
+    mel_db = librosa.power_to_db(mel, ref=np.max)
 
     return mel_db
 
-print("Processing audio files into spectrograms...")
-for idx, row in df.iterrows():
-    file_path = row['filepath']
-    label = row['label']
-    
-    if os.path.exists(file_path):
+# Process each label directory
+for label in labels:
+    input_dir = os.path.join(input_base, label)
+    output_dir = os.path.join(output_base, label)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Find all .wav files
+    wav_files = glob(os.path.join(input_dir, "*.wav"))
+
+    print(f"\nProcessing {label} files ({len(wav_files)} found)...")
+
+    for file_path in wav_files:
         try:
+            # Generate spectrogram
             spectrogram = extract_mel_spectrogram(file_path)
-            X.append(spectrogram)
-            y.append(label)
+
+            # Build save path
+            filename = os.path.splitext(os.path.basename(file_path))[0]
+            save_path = os.path.join(output_dir, f"{filename}.npy")
+
+            # Save as .npy file
+            np.save(save_path, spectrogram)
+
+            print(f"Saved: {save_path}")
         except Exception as e:
-            print(f"Error with {file_path}: {e}")
+            print(f"Error processing {file_path}: {e}")
 
-# Convert to NumPy arrays
-X = np.array(X)
-y = np.array(y)
-
-print("Saving processed dataset...")
-np.save('X.npy', X)
-np.save('y.npy', y)
-
-print(f"Saved: {len(X)} spectrograms with shape {X[0].shape}")
+print("\n✅ All spectrograms saved to 'spectrograms/' directory.")
