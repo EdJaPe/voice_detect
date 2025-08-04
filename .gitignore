@@ -9,7 +9,7 @@ model/**/*.h5
 model/**/*.pkl
 model/**/*.tflite
 spectrograms/**/*.npy
-
+*.h5
 # Python virtual environments
 venv/
 env/
