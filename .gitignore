@@ -8,6 +8,7 @@ data/background/
 model/**/*.h5
 model/**/*.pkl
 model/**/*.tflite
+spectrograms/**/*.npy
 
 # Python virtual environments
 venv/
