@@ -70,4 +70,4 @@ test_loss, test_acc = model.evaluate(X_test, y_test)
 print(f"\n✅ Test Accuracy: {test_acc:.2f}")
 
 # Optional: Save model
-model.save("voice_detection_model.h5")
+model.save("model/voice_detection_model.h5")

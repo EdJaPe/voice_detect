@@ -12,7 +12,7 @@ HOP_LENGTH = 512
 SAMPLES_PER_FILE = SAMPLE_RATE * DURATION
 LABELS = ['background', 'silence', 'voice']  # Your class order during training
 MODEL_PATH = "voice_detection_model.h5"
-TEST_FILE = "sel.2109.ch01.230512.195336.03.other.human voice and retrieval.wav"  # Replace with your test file path
+TEST_FILE = "data/cornell/sel.2109.ch01.230512.195336.03.other.human voice and retrieval.wav"  # Replace with your test file path
 
 # ---- Load and preprocess test audio ----
 def preprocess_wav(file_path):
